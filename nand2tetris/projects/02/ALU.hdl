@@ -42,5 +42,44 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    Mux16(a=x, b=false, sel=zx, out=zxOut); // will be 0 if zx == 1 and x if zx == 0
+    
+    Not16(in=zxOut, out=notX); // negate the bits of x
+    Mux16(a=zxOut, b=notX, sel=nx, out=nxOut); // will be modified x if nx == 0 and !x if nx == 1
+
+    Mux16(a=y, b=false, sel=zy, out=zyOut); // will be 0 if zy == 1 and y if zy == 0
+    
+    Not16(in=zyOut, out=notY); // negate the bits of y
+    Mux16(a=zyOut, b=notY, sel=ny, out=nyOut); // will be modified y if ny == 0 and !y if ny == 1
+
+    Add16(a=nxOut, b=nyOut, out=addXY);
+    And16(a=nxOut, b=nyOut, out=andXY);
+
+    Mux16(a=andXY, b=addXY, sel=f, out=fOut); // will be and result if f == 0 and add result if f == 1
+    
+    Not16(in=fOut, out=notFOut); // negate the bits of fOut
+    Mux16(a=fOut, b=notFOut, sel=no, out=out); // will be fOut if no == 0 and notFOut if no == 1
+    Mux16(a=fOut, b=notFOut, sel=no, out=tempOut); // temp output for zr and ng computations
+
+    And16(a=tempOut, b=true, out[15]=ng); // set ng equal to the lsb, will be 1 if negative and 0 if positive
+
+    // TODO is there a simpler way to set zr??
+    Not16(in=tempOut, out[0]=notOut1, out[1]=notOut2, out[2]=notOut3, out[3]=notOut4, out[4]=notOut5, out[5]=notOut6, out[6]=notOut7, out[7]=notOut8, out[8]=notOut9, out[9]=notOut10, out[10]=notOut11, out[11]=notOut12, out[12]=notOut13, out[13]=notOut14, out[14]=notOut15, out[15]=notOut16);
+    And(a=notOut1, b=notOut2, out=andOut1);
+    And(a=andOut1, b=notOut3, out=andOut2);
+    And(a=andOut2, b=notOut4, out=andOut3);
+    And(a=andOut3, b=notOut5, out=andOut4);
+    And(a=andOut4, b=notOut6, out=andOut5);
+    And(a=andOut5, b=notOut7, out=andOut6);
+    And(a=andOut6, b=notOut8, out=andOut7);
+    And(a=andOut7, b=notOut9, out=andOut8);
+    And(a=andOut8, b=notOut10, out=andOut9);
+    And(a=andOut9, b=notOut11, out=andOut10);
+    And(a=andOut10, b=notOut12, out=andOut11);
+    And(a=andOut11, b=notOut13, out=andOut12);
+    And(a=andOut12, b=notOut14, out=andOut13);
+    And(a=andOut13, b=notOut15, out=andOut14);
+    And(a=andOut14, b=notOut16, out=zr);
+
+
 }
