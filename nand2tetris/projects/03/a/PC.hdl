@@ -16,5 +16,17 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // compute out[t+1] + 1 using register output
+    Inc16(in=regOut, out=outPlusOne);
+
+    // use mux to compute if else statement, starting with last else for the load flags
+    Mux16(a=false, b=outPlusOne, sel=inc, out=muxOne);
+    Mux16(a=muxOne, b=in, sel=load, out=muxTwo);
+    Mux16(a=muxTwo, b=false, sel=reset, out=logicIn);
+
+    // use or to determine if none of the load flags are set
+    Or(a=reset, b=load, out=resetOrLoad);
+    Or(a=resetOrLoad, b=inc, out=resetOrLoadOrInc);
+
+    Register(in=logicIn, load=resetOrLoadOrInc, out=out, out=regOut);
 }
