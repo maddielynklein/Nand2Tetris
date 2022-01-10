@@ -10,3 +10,47 @@
 // R0 >= 0, R1 >= 0, and R0*R1 < 32768.
 
 // Put your code here.
+
+// initialize i to be 0
+@i
+M=0
+
+// initialize sum to be 0
+@sum
+M=0
+
+(LOOP)
+// check if i is greater than R1
+@i
+D=M
+@R1
+D=D-M
+// if so jump to end
+@STOP
+D;JEQ
+
+// access R0
+@R0
+D=M
+// add R0 to current sum
+@sum
+D=D+M
+// store new sum in memory
+M=D
+// increment counter
+@i
+M=M+1
+// jump to start of loop to begin again
+@LOOP
+0;JMP
+
+(STOP)
+// load sum into R2
+@sum
+D=M
+@R2
+M=D
+
+(END)
+@END
+0;JMP
